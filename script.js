@@ -194,37 +194,108 @@ const list = [
     "Trait Morally Uteri"
 ] // 193 anagrams
 let wheelCount = 0;
+let selectionNode;
+let selection = "";
+
+document.addEventListener("drag", (event) => {
+    event.preventDefault();
+})
+
+window.addEventListener("wheel", e => {
+    if (wheelCount <= 10) {
+        e.preventDefault()
+    }
+}, {passive: false})
 
 onwheel = function () {
     let anagram = document.getElementById("anagram");
     let title = document.getElementById("title1");
-    title.innerHTML = "<del>Literary Mutilator</del>";
+    title.innerHTML = "<del>The Literary Mutilator</del>";
     title.className = "small";
     let rand = Math.floor((Math.random() * 193));
-    console.log(rand);
-    anagram.textContent = list[rand];
+    anagram.textContent = "The " + list[rand];
     anagram.style.color = newHexColor();
     wheelCount++;
 }
 
 onscroll = function (event) {
-    if (wheelCount <=10) {
+    if (wheelCount <= 10) {
         event.preventDefault();
     }
 }
+document.addEventListener("dragstart", function (event) {
+    event.dataTransfer.setData("text/plain", event.target.innerText)
+}, false);
 
-function newHexColor () {
+function dragOver(event) {
+    event.preventDefault();
+
+}
+
+function onDrop(event) {
+    // prevent default action (open as link for some elements)
+    event.preventDefault();
+    if (event.target.id === "rearrange") {
+        replaceText((event.dataTransfer.getData("text/plain")));
+    } else if (event.target.id === "rot13") {
+
+    }
+    for (const span of document.getElementsByTagName("span")) {
+        if (span.innerText.match(selection)) {
+            span.innerText = replacement;
+        }
+    }
+}
+
+document.onselectionchange = function (event) {
+    // selection = window.getSelection().toString();
+    // console.log(shuffleArray(selection.split(" ")).join(" "));
+}
+
+function replaceText(selection) {
+    let replacement = shuffleArray(selection.split(" ")).join(" ");
+    // document.getElementById("text").innerText = document.getElementById("text").innerText.replace(selection,
+    // replacement);
+    for (const span of document.getElementsByTagName("span")) {
+        if (span.innerText.match(selection)) {
+            span.innerText = replacement;
+        }
+    }
+}
+
+function encryptText() {
+    let replacement = rot13(selection);
+    document.getElementById("text").innerText.replace(selection, replacement);
+}
+
+function newHexColor() {
     let red = Math.floor((Math.random() * 256))
     let green = Math.floor((Math.random() * 256))
     let blue = Math.floor((Math.random() * 256))
-    let hexColor = `#${decToHex(red)}${decToHex(green)}${decToHex(blue)}`
-    return hexColor;
+    return `#${decToHex(red)}${decToHex(green)}${decToHex(blue)}`;
 }
 
-function decToHex (num) {
+function decToHex(num) {
     let hex = Number(num).toString(16);
     if (hex.length < 2) {
         hex = "0" + hex;
     }
     return hex;
+}
+
+// I stole these from StackOverflow
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function rot13(str) {
+    let input = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let output = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
+    let index = x => input.indexOf(x);
+    let translate = x => index(x) > -1 ? output[index(x)] : x;
+    return str.split('').map(translate).join('');
 }

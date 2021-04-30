@@ -11,7 +11,7 @@
 
 | Tier I                     	| Tier II                         	| Tier III                                              	| Tier IV                                                        	|
 |----------------------------	|---------------------------------	|-------------------------------------------------------	|----------------------------------------------------------------	|
-| Change Text Color          	| Find & Replace                  	| Find and Replace Using Regular Expressions            	| Load a <p> tag from the   JSONPlaceholder  using the Fetch API 	|
+| Change Text Color          	| Find & Replace                  	| Find and Replace Using Regular Expressions            	| Load a ```<p>``` tag from the   JSONPlaceholder  using the Fetch API 	|
 | Change Text Font           	| Highlight Word                  	| [ROT13 Encryption](https://www.wikiwand.com/en/ROT13) 	|                                                                	|
 | Highlight Entire Paragraph 	| Map Scroll To Delete Words      	| Create anagrams of all words in a text sample         	|                                                                	|
 |                            	| Shuffle Words In a Random Order 	| Use the HTML5 drag & drop events                      	|                                                                	|
