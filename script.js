@@ -193,10 +193,12 @@ const list = [
     "Rarity Amour Little",
     "Trait Morally Uteri"
 ] // 193 anagrams
+const rando = n => Math.floor((Math.random() * n));
 let wheelCount = 0;
 let secret = true;
 let latin = 0;
 let targetSpan;
+
 
 document.addEventListener("drag", (event) => {
     event.preventDefault();
@@ -213,7 +215,7 @@ onwheel = function () {
     let title = document.getElementById("title1");
     title.innerHTML = "<del>The Literary Mutilator</del>";
     title.className = "small";
-    let rand = Math.floor((Math.random() * 193));
+    let rand = rando(193);
     anagram.textContent = "The " + list[rand];
     anagram.style.color = newHexColor();
     wheelCount++;
@@ -266,9 +268,9 @@ function onDrop(event) {
 }
 
 function newHexColor() {
-    let red = Math.floor((Math.random() * 256))
-    let green = Math.floor((Math.random() * 256))
-    let blue = Math.floor((Math.random() * 256))
+    let red = rando(256);
+    let green = rando(256);
+    let blue = rando(256);
     return `#${decToHex(red)}${decToHex(green)}${decToHex(blue)}`;
 }
 
@@ -280,8 +282,8 @@ function decToHex(num) {
     return hex;
 }
 
-function latinate(event) {
-    let rand = Math.floor((Math.random() * 20))+1;
+function latinate() {
+    let rand = rando(20)+1;
     let latin = "";
     fetch(`https://jsonplaceholder.typicode.com/posts/${rand}`)
         .then((response) => response.json())
