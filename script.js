@@ -194,8 +194,9 @@ const list = [
     "Trait Morally Uteri"
 ] // 193 anagrams
 let wheelCount = 0;
-let selectionNode;
-let selection = "";
+let secret = true;
+let latin = 0;
+let targetSpan;
 
 document.addEventListener("drag", (event) => {
     event.preventDefault();
@@ -221,51 +222,47 @@ onwheel = function () {
 onscroll = function (event) {
     if (wheelCount <= 10) {
         event.preventDefault();
+    } else if (secret) {
+        document.getElementById("latinater").classList.replace("invisible", "visible")
+        secret = false;
     }
 }
 document.addEventListener("dragstart", function (event) {
+    targetSpan = event.target;
+    targetSpan.classList.add("bg-warning")
     event.dataTransfer.setData("text/plain", event.target.innerText)
 }, false);
 
+document.addEventListener("dragend", event => targetSpan.classList.remove("bg-warning"));
+
 function dragOver(event) {
     event.preventDefault();
+    event.target.classList.replace("btn-outline-info", "btn-info");
+}
 
+function dragLeave(event) {
+    event.preventDefault();
+    event.target.classList.replace("btn-info", "btn-outline-info");
 }
 
 function onDrop(event) {
-    // prevent default action (open as link for some elements)
+    // targetSpan.classList.remove("bg-warning");
     event.preventDefault();
+    event.target.classList.replace("btn-info", "btn-outline-info");
+    let selection = event.dataTransfer.getData("text/plain");
+    let replacement;
     if (event.target.id === "rearrange") {
-        replaceText((event.dataTransfer.getData("text/plain")));
+        replacement = shuffleArray(selection);
     } else if (event.target.id === "rot13") {
-
+        replacement = rot13(selection);
     }
     for (const span of document.getElementsByTagName("span")) {
         if (span.innerText.match(selection)) {
             span.innerText = replacement;
+            span.style.color = newHexColor();
+            return;
         }
     }
-}
-
-document.onselectionchange = function (event) {
-    // selection = window.getSelection().toString();
-    // console.log(shuffleArray(selection.split(" ")).join(" "));
-}
-
-function replaceText(selection) {
-    let replacement = shuffleArray(selection.split(" ")).join(" ");
-    // document.getElementById("text").innerText = document.getElementById("text").innerText.replace(selection,
-    // replacement);
-    for (const span of document.getElementsByTagName("span")) {
-        if (span.innerText.match(selection)) {
-            span.innerText = replacement;
-        }
-    }
-}
-
-function encryptText() {
-    let replacement = rot13(selection);
-    document.getElementById("text").innerText.replace(selection, replacement);
 }
 
 function newHexColor() {
@@ -283,13 +280,41 @@ function decToHex(num) {
     return hex;
 }
 
+function latinate(event) {
+    let rand = Math.floor((Math.random() * 20))+1;
+    let latin = "";
+    fetch(`https://jsonplaceholder.typicode.com/posts/${rand}`)
+        .then((response) => response.json())
+        .then((json) => {
+            latin = json.body.replace("\n", ", ");
+            latin = latin.charAt(0).toUpperCase() + latin.substring(1);
+            appendLatinChild(latin);
+        });
+}
+
+function appendLatinChild(string) {
+    let node = document.getElementById("latin")
+    let child = document.createElement("span", )
+    child.draggable = true;
+    child.appendChild(document.createTextNode(string));
+    node.appendChild(child);
+    node.append(document.createTextNode(". "));
+    window.scrollTo(0,document.body.scrollHeight);
+    latin++;
+    if (latin > 8) {
+        document.getElementById("latinater").setAttribute("disabled", "true");
+        document.getElementById("latinater").innerText = "That's enough Latin."
+    }
+}
+
 // I stole these from StackOverflow
-function shuffleArray(array) {
+function shuffleArray(string) {
+    let array = string.split(" ");
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-    return array;
+    return array.join(" ");
 }
 
 function rot13(str) {
