@@ -225,7 +225,9 @@ onscroll = function (event) {
     if (wheelCount <= 10) {
         event.preventDefault();
     } else if (secret) {
-        document.getElementById("latinater").classList.replace("invisible", "visible")
+        let latin = document.getElementById("latinater");
+        latin.classList.replace("invisible", "visible");
+        latin.onclick = addLatin;
         secret = false;
     }
 }
@@ -235,17 +237,22 @@ document.addEventListener("dragstart", function (event) {
     event.dataTransfer.setData("text/plain", event.target.innerText)
 }, false);
 
-document.addEventListener("dragend", event => targetSpan.classList.remove("bg-warning"));
-
-function dragOver(event) {
+document.addEventListener("dragover", function (event) {
+    // prevent default to allow drop
     event.preventDefault();
-    event.target.classList.replace("btn-outline-info", "btn-info");
-}
+    if (event.target.classList.contains("dropzone")) {
+        event.target.classList.replace("btn-outline-info", "btn-info");
+    }
+}, false);
 
-function dragLeave(event) {
+document.addEventListener("dragend", () => targetSpan.classList.remove("bg-warning"));
+
+document.addEventListener("dragleave", event => {
     event.preventDefault();
     event.target.classList.replace("btn-info", "btn-outline-info");
-}
+})
+document.addEventListener("drop", event => onDrop(event));
+
 
 function onDrop(event) {
     // targetSpan.classList.remove("bg-warning");
@@ -282,8 +289,8 @@ function decToHex(num) {
     return hex;
 }
 
-function latinate() {
-    let rand = rando(20)+1;
+function addLatin() {
+    let rand = rando(20) + 1;
     let latin = "";
     fetch(`https://jsonplaceholder.typicode.com/posts/${rand}`)
         .then((response) => response.json())
@@ -292,16 +299,17 @@ function latinate() {
             latin = latin.charAt(0).toUpperCase() + latin.substring(1);
             appendLatinChild(latin);
         });
+
 }
 
 function appendLatinChild(string) {
     let node = document.getElementById("latin")
-    let child = document.createElement("span", )
+    let child = document.createElement("span",)
     child.draggable = true;
     child.appendChild(document.createTextNode(string));
     node.appendChild(child);
     node.append(document.createTextNode(". "));
-    window.scrollTo(0,document.body.scrollHeight);
+    window.scrollTo(0, document.body.scrollHeight);
     latin++;
     if (latin > 8) {
         document.getElementById("latinater").setAttribute("disabled", "true");
