@@ -200,10 +200,6 @@ let latin = 0;
 let targetSpan;
 
 
-document.addEventListener("drag", (event) => {
-    event.preventDefault();
-})
-
 window.addEventListener("wheel", e => {
     if (wheelCount <= 10) {
         e.preventDefault()
@@ -231,31 +227,45 @@ onscroll = function (event) {
         secret = false;
     }
 }
-document.addEventListener("dragstart", function (event) {
+
+document.addEventListener("DOMContentLoaded", event => {
+
+    document.addEventListener("drag", (event) => {
+        event.preventDefault();
+    })
+    document.addEventListener("dragend", () => targetSpan.classList.remove("bg-warning"));
+
+    document.querySelectorAll("button").forEach(button => {
+        button.addEventListener("dragover", event => dragOver(event), false)
+        button.addEventListener("dragleave", event => dragLeave(event), false)
+        button.addEventListener("drop", event => onDrop(event))
+    })
+    document.querySelectorAll("span").forEach(span => span.addEventListener("dragstart", event => dragStart(event), false))
+})
+
+ function dragStart (event) {
     targetSpan = event.target;
     targetSpan.classList.add("bg-warning")
     event.dataTransfer.setData("text/plain", event.target.innerText)
-}, false);
+}
 
-document.addEventListener("dragover", function (event) {
+ function dragOver (event) {
     // prevent default to allow drop
     event.preventDefault();
     if (event.target.classList.contains("dropzone")) {
         event.target.classList.replace("btn-outline-info", "btn-info");
     }
-}, false);
+}
 
-document.addEventListener("dragend", () => targetSpan.classList.remove("bg-warning"));
-
-document.addEventListener("dragleave", event => {
+function dragLeave (event) {
     event.preventDefault();
-    event.target.classList.replace("btn-info", "btn-outline-info");
-})
-document.addEventListener("drop", event => onDrop(event));
 
+    if (event.target.isPrototypeOf(HTMLButtonElement) && event.target.classList.contains("dropzone")) {
+        event.target.classList.replace("btn-info", "btn-outline-info");
+    }
+}
 
 function onDrop(event) {
-    // targetSpan.classList.remove("bg-warning");
     event.preventDefault();
     event.target.classList.replace("btn-info", "btn-outline-info");
     let selection = event.dataTransfer.getData("text/plain");
